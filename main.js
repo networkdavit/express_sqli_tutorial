@@ -129,3 +129,8 @@ app.post('/login', (req,res) =>{
 //     "username": "admin';OR '1' = '1'", 
 //     "password": "asdf"
 // }
+
+//js explanation
+// let username = "admin"
+// let password = "password123"
+// console.log(username == "admin" || '1' == '1'/* && password == "passworda123" */)
