@@ -29,18 +29,35 @@ app.post('/register', (req,res) =>{
 
 })
 
-app.post('/login', (req,res) =>{
+// app.post('/login', (req,res) =>{
+// 	const username = req.body.username
+// 	const password = req.body.password
+// 	const hashed_password = crypto.createHash('sha256').update(password).digest('hex');
+
+// 	let sql = "SELECT * FROM users WHERE username = '"+ username +"' AND password = '"+ hashed_password +"'"
+// 	console.log(sql)
+// 	  db.get(sql, function(err, row){
+// 	        if(err || row == undefined){
+// 	            res.send(JSON.stringify({status: "Wrong credentials"}))
+// 	        }else{
+// 		        res.send(JSON.stringify({status: `Logged in as ${row.username}`}))
+// 	        }
+// 	    })  
+// })
+
+app.post('/update', (req,res) =>{
 	const username = req.body.username
 	const password = req.body.password
 	const hashed_password = crypto.createHash('sha256').update(password).digest('hex');
 
-	let sql = "SELECT * FROM users WHERE username = '"+ username +"' AND password = '"+ hashed_password +"'"
+	let sql = "UPDATE users SET password = '"+ password +"' where username = '"+ username +"'"
 	console.log(sql)
-	  db.get(sql, function(err, row){
-	        if(err || row == undefined){
+	  db.run(sql, function(err, row){
+	  	console.log(sql)
+	        if(err){
 	            res.send(JSON.stringify({status: "Wrong credentials"}))
 	        }else{
-		        res.send(JSON.stringify({status: "Logged in"}))
+		        res.send(JSON.stringify({status: "Updated"}))
 	        }
 	    })  
 })
@@ -48,10 +65,11 @@ app.post('/login', (req,res) =>{
 
 
 
+
 //solutions
 
 
-//wildcard
+// wildcard
 // app.post('/login', (req,res) =>{
 // 	const username = req.body.username
 // 	const password = req.body.password
@@ -67,28 +85,32 @@ app.post('/login', (req,res) =>{
 
 // })
 
-//blacklist
-// const black_list = ["'", '"', "OR", "or", "AND", "and", "-", "--", "---"]
-// app.post('/login', (req,res) =>{
-// 	const username = req.body.username
-// 	const password = req.body.password
-// 	black_list.forEach(function(item, index){
-// 		if(username.includes(item)){
-// 			res.send(JSON.stringify({status: "Wrong credentials"}))
-// 		}
-// 		else{
-// 			let sql = "SELECT * FROM users WHERE username = '"+ username +"' AND password = '"+ password +"'"
-// 			console.log(sql)
-// 		  	db.get(sql, function(err, row){
-// 	        if(err || row == undefined){
-// 	            res.send(JSON.stringify({status: "Wrong credentials"}))
-// 	        }else{
-// 		        res.send(JSON.stringify({status: "Logged in"}))
-// 	        }
-// 	    })  
-// 		}
-// 	})
-// })
+// blacklist
+const black_list = ["'", '"', "OR", "or", "AND", "and", "-", "--", "---"]
+app.post('/login', (req,res) =>{
+	const username = req.body.username
+	const password = req.body.password
+	let isVulnerable = false;
+	black_list.forEach(function(item, index){
+		if(username.includes(item)){
+			isVulnerable = true
+		}
+ 	})
+ 	if(isVulnerable){
+		res.send(JSON.stringify({status: "Wrong credentials"}))
+ 	}else{
+		let sql = "SELECT * FROM users WHERE username = '"+ username +"' AND password = '"+ password +"'"
+		console.log(sql)
+		db.get(sql, function(err, row){
+		if(err || row == undefined){
+			res.send(JSON.stringify({status: "Wrong credentials"}))
+		}else{
+			res.send(JSON.stringify({status: "Logged in"}))
+		}
+		})
+ 	}
+
+})
 
 
 
@@ -138,6 +160,12 @@ app.post('/login', (req,res) =>{
 // {
 // 	"username": "a' OR '1' = '1';--",
 // 	"password": "123"
+// }
+
+// Update all user passwords
+// {
+// 	"username": "a",
+// 	"password": "123';--"
 // }
 
 //js explanation
