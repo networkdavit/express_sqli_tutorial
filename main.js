@@ -73,9 +73,10 @@ app.post('/update', (req,res) =>{
 // app.post('/login', (req,res) =>{
 // 	const username = req.body.username
 // 	const password = req.body.password
+// 	const hashed_password = crypto.createHash('sha256').update(password).digest('hex');
 // 	let sql = "SELECT * FROM users WHERE username = ? AND password = ?"
 // 	console.log(sql)
-// 	  db.get(sql,[username,password], function(err, row){
+// 	  db.get(sql,[username,hashed_password], function(err, row){
 // 	        if(err || row == undefined){
 // 	            res.send(JSON.stringify({status: "Wrong credentials"}))
 // 	        }else{
@@ -90,6 +91,7 @@ const black_list = ["'", '"', "OR", "or", "AND", "and", "-", "--", "---"]
 app.post('/login', (req,res) =>{
 	const username = req.body.username
 	const password = req.body.password
+	const hashed_password = crypto.createHash('sha256').update(password).digest('hex');
 	let isVulnerable = false;
 	black_list.forEach(function(item, index){
 		if(username.includes(item)){
@@ -99,7 +101,7 @@ app.post('/login', (req,res) =>{
  	if(isVulnerable){
 		res.send(JSON.stringify({status: "Wrong credentials"}))
  	}else{
-		let sql = "SELECT * FROM users WHERE username = '"+ username +"' AND password = '"+ password +"'"
+		let sql = "SELECT * FROM users WHERE username = '"+ username +"' AND password = '"+ hashed_password +"'"
 		console.log(sql)
 		db.get(sql, function(err, row){
 		if(err || row == undefined){
